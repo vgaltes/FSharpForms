@@ -6,46 +6,6 @@ open Suave.Html
 open Suave.Form
 open FSharpForms.Forms
 
-let divClass c = divAttr ["class", c]
-let form x = tag "form" ["method", "POST"] (flatten x)
-let submitInput value = inputAttr ["type", "submit"; "value", value]
-let fieldset x = tag "fieldset" [] (flatten x)
-let legend txt = tag "legend" [] (text txt)
-
-type Field<'a> = {
-    Label : string
-    Xml : Form<'a> -> Suave.Html.Xml
-}
-
-type Fieldset<'a> = {
-    Legend : string
-    Fields : Field<'a> list
-}
-
-type FormLayout<'a> = {
-    Fieldsets : Fieldset<'a> list
-    SubmitText : string
-    Form : Form<'a>
-}
-
-let renderForm (layout : FormLayout<_>) =    
-    form [
-        for set in layout.Fieldsets -> 
-            fieldset [
-                yield legend set.Legend
-
-                for field in set.Fields do
-                    yield divClass "editor-label" [
-                        text field.Label
-                    ]
-                    yield divClass "editor-field" [
-                        field.Xml layout.Form
-                    ]
-            ]
-
-        yield submitInput layout.SubmitText
-    ]
-    
 let createHuman = 
     html [
         head [
@@ -53,19 +13,29 @@ let createHuman =
         ]
 
         body [           
-            div [text "Create"]
-
-            renderForm
-                { Form = Forms.human
-                  Fieldsets = 
-                    [ { Legend = "Album"
-                        Fields = 
-                            [ { Label = "Name"
-                                Xml = input (fun f -> <@ f.Name @>) [] }
-                              { Label = "Surname"
-                                Xml = input (fun f -> <@ f.Surname @>) [] }
-                            ] } ]
-                  SubmitText = "Create" }
+            div [text "Create"]            
+            
+            tag "form" ["method", "POST"] (flatten 
+                [
+                    tag "fieldset" [] (flatten 
+                        [
+                            divAttr ["class", "editor-label"] [
+                                text "Name"
+                            ]
+                            divAttr ["class", "editor-field"] [
+                                input (fun f -> <@ f.Name @>) [] Forms.human
+                            ]
+                            
+                            divAttr ["class", "editor-label"] [
+                                text "Surname"
+                            ]
+                            divAttr ["class", "editor-field"] [
+                                input (fun f -> <@ f.Surname @>) [] Forms.human
+                            ]
+                        ])
+                        
+                    inputAttr ["type", "submit"; "value", "Create human"]                
+                ])
        ]
     ]
     |> xmlToString

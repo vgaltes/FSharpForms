@@ -15,19 +15,11 @@ open Suave.RequestErrors
 #load "View.fs"
 
 open FSharpForms
-open FSharpForms
-
-let html container =
-    OK (container)
-    >=> Writers.setMimeType "text/html; charset=utf-8"
-
-let bindToForm form handler =
-    bindReq (bindForm form) handler BAD_REQUEST
-    
-let experimentalHuman : WebPart =
+   
+let experimentalHuman =
     choose [
-        GET >=>  warbler (fun _ -> OK (Views.createHuman) )
-        POST >=> bindToForm Forms.human (fun form -> OK ( Views.showHuman form) ) 
+        GET >=>  OK (Views.createHuman)
+        POST >=> bindReq (bindForm Forms.human) (fun form -> OK ( Views.showHuman form) ) BAD_REQUEST
     ]
               
 let app = 

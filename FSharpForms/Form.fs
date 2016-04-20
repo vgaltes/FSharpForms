@@ -2,7 +2,6 @@ module FSharpForms.Forms
 
 open Suave.Form
 
-
 type Human = {
     Name : string
     Surname : string
