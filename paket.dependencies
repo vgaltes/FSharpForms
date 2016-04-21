@@ -4,4 +4,5 @@ framework >= net45
 nuget FAKE
 nuget Suave
 nuget Suave.Experimental
+nuget Suave.DotLiquid
 nuget FSharp.Compiler.Service
